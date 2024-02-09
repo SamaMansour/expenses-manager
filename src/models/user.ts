@@ -1,7 +1,10 @@
+// src/models/user.ts
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../db'; 
+import sequelize from '../db'; // Importing the configured Sequelize instance
 
-class User extends Model {}
+export class User extends Model {
+    password!: string;
+}
 
 User.init({
   username: DataTypes.STRING,
