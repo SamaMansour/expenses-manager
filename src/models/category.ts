@@ -1,10 +1,12 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../db'; // Assuming you've set up your Sequelize connection as shown before
+// models/category.ts
+import { Model, InferAttributes, InferCreationAttributes, CreationOptional, ForeignKey, DataTypes } from 'sequelize';
+import sequelize  from '../db'; // Adjust this import based on your actual DB connection setup
+import { User } from './user'; // Adjust this import based on your actual User model
 
-export class Category extends Model {
-  public id!: number; // Note: using `public` is optional here, it's just for clarity
-  public name!: string;
-  public userId!: number; // Foreign key to reference User model
+export class Category extends Model<InferAttributes<Category>, InferCreationAttributes<Category>> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare userId: ForeignKey<User['id']>;
 }
 
 Category.init({
@@ -20,12 +22,8 @@ Category.init({
   userId: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
-    references: {
-      model: 'users', // This is the table name
-      key: 'id', // This is the column in the users table that we will reference
-    }
   },
 }, {
-  tableName: 'categories', // Explicitly specifying the table name is optional but recommended
-  sequelize, // Passing the Sequelize instance is required
+  sequelize,
+  modelName: 'category',
 });

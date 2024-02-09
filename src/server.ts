@@ -4,6 +4,7 @@ import session from 'express-session';
 import passport from './config/passport'; // Adjust the path according to your project structure
 import sequelize from './db';
 import userRoutes from './routes/userRoutes';
+import categoryRoutes from './routes/categoryRoutes';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -68,6 +69,10 @@ app.post('/login', (req, res) => {
     // Proceed with login logic (e.g., setting session cookies) and redirect
   }
 });
+
+
+app.use('/users', userRoutes);
+app.use('/categories', categoryRoutes);
 
 
 
