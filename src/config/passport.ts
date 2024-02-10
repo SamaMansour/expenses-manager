@@ -5,7 +5,7 @@ import { comparePassword } from '../utils/auth';
 import bcrypt from 'bcryptjs';
 
 passport.use(new LocalStrategy({
-    usernameField: 'email', // Use 'email' instead of the default 'username'
+    usernameField: 'email', 
     passwordField: 'password',
   }, async (email, password, done) => {
     try {
@@ -25,7 +25,6 @@ passport.use(new LocalStrategy({
     }
   }));
   
-// Serialize and deserialize user instances to and from the session.
 passport.serializeUser((user: any, done) => done(null, user.id));
 passport.deserializeUser(async (id: any, done) => {
   try {

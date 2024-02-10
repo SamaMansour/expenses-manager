@@ -1,7 +1,7 @@
 // controllers/expenseController.ts
 import { Request, Response } from 'express';
 import { Expense } from '../models/expense';
-import sequelize from '../db'; // Importing the configured Sequelize instance
+import sequelize from '../db'; 
 import { Category } from '../models/category';
 
 
@@ -29,11 +29,11 @@ export async function deleteExpense(req: Request, res: Response) {
   }
 
   export async function editExpense(req: Request, res: Response): Promise<void> {
-    const { id } = req.params; // Expense ID from the URL
+    const { id } = req.params; 
     const { userId, amount, date, categoryId } = req.body; // Updated expense data from the request body
 
     try {
-        // Find the expense by ID and userId to ensure the user can only edit their own expenses
+        
         const expense = await Expense.findOne({ where: { id, userId } });
 
         if (!expense) {

@@ -10,6 +10,5 @@ router.get('/', listCategories);
 router.put('/categories/:id', editCategory);
 router.get('/categories/:id', getCategory);
 
-// Define other routes (update, delete, get) here, also protected by ensureAuthenticated
 
 export default router;

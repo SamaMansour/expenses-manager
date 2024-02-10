@@ -21,8 +21,7 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await hashPassword(password);
     const newUser = await User.create({ username, email, password: hashedPassword });
 
-    // Optionally, generate a token or perform any post-registration logic
-    // const token = generateToken({ id: newUser.id, username: newUser.username });
+   
 
     res.status(201).json(newUser);
   } catch (error: any) {

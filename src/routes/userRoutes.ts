@@ -1,6 +1,6 @@
 import express from 'express';
 import * as userController from '../controllers/userController';
-import passport from 'passport'; // Make sure Passport is configured with a local strategy
+import passport from 'passport';
 
 const router = express.Router();
 
