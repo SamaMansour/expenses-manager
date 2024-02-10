@@ -32,7 +32,7 @@ app.use(express.static('public'));
 
 // Routes
 app.use('/users', userRoutes);
-app.use('/categories', ensureAuthenticated, categoryRoutes); // Protect all category routes
+app.use('/categories',  categoryRoutes); // Protect all category routes
 
 // Home route
 app.get('/', (req, res) => res.render('index'));

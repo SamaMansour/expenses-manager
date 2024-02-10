@@ -1,14 +1,14 @@
-// src/controllers/categoryController.ts
 import { Request, Response } from 'express';
 import { Category } from '../models/category';
 
 export async function createCategory(req: Request, res: Response): Promise<void> {
     const { name } = req.body;
-    const userId = 8; // Assuming req.user is populated by Passport.js after successful authentication
+    const { userId } = req.body;
+
     
     try {
         const newCategory = await Category.create({ name, userId });
-        res.redirect('/categories');
+        res.status(201).json(newCategory); // Respond with the newly created category object
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error creating category' });
@@ -16,16 +16,51 @@ export async function createCategory(req: Request, res: Response): Promise<void>
 }
 
 export async function listCategories(req: Request, res: Response): Promise<void> {
-    const userId =  8;
-    
     try {
-        const categories = await Category.findAll({ where: { userId } });
-        res.render('categories/list', { categories }); // For web applications
-        // Or for APIs: res.json(categories);
+        const categories = await Category.findAll();
+        res.json(categories); // Respond with the list of categories as JSON
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching categories' });
     }
 }
 
-// Implement updateCategory, getCategory, and deleteCategory similarly, ensuring each operation is scoped to the authenticated user.
+
+export async function editCategory(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    try {
+        const category = await Category.findByPk(id);
+        if (!category) {
+            res.status(404).json({ message: 'Category not found' });
+            return;
+        }
+
+        category.name = name;
+        await category.save();
+        res.json(category);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating category' });
+    }
+}
+
+
+export async function getCategory(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    
+    try {
+        const category = await Category.findByPk(id);
+        if (!category) {
+            res.status(404).json({ message: 'Category not found' });
+            return;
+        }
+        
+        res.json(category);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching category' });
+    }
+}
+
