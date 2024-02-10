@@ -5,10 +5,10 @@ import { ensureAuthenticated } from '../middlewares/auth';
 
 const router = express.Router();
 
-router.post('/create', createCategory);
-router.get('/', listCategories);
-router.put('/categories/:id', editCategory);
-router.get('/categories/:id', getCategory);
+router.post('/create', ensureAuthenticated, createCategory);
+router.get('/', ensureAuthenticated, listCategories);
+router.put('/categories/:id', ensureAuthenticated, editCategory);
+router.get('/categories/:id', ensureAuthenticated, getCategory);
 
 
 export default router;
