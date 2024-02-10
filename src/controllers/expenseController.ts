@@ -28,6 +28,37 @@ export async function deleteExpense(req: Request, res: Response) {
     }
   }
 
+  export async function editExpense(req: Request, res: Response): Promise<void> {
+    const { id } = req.params; // Expense ID from the URL
+    const { userId, amount, date, categoryId } = req.body; // Updated expense data from the request body
+
+    try {
+        // Find the expense by ID and userId to ensure the user can only edit their own expenses
+        const expense = await Expense.findOne({ where: { id, userId } });
+
+        if (!expense) {
+            // Expense not found or does not belong to the user
+            res.status(404).json({ message: 'Expense not found or access denied' });
+            return;
+        }
+
+        // Update the expense with new values
+        expense.amount = amount !== undefined ? amount : expense.amount;
+        expense.date = date || expense.date;
+        expense.categoryId = categoryId !== undefined ? categoryId : expense.categoryId;
+
+        // Save the updated expense
+        await expense.save();
+
+        // Respond with the updated expense data
+        res.json(expense);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating expense' });
+    }
+}
+
+
   export async function listExpenses(req: Request, res: Response) {
     const { userId, period, date } = req.query; // period: 'day' | 'month' | 'year'
     let whereClause = {};

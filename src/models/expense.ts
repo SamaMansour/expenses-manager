@@ -2,7 +2,11 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize  from '../db';
 
-export class Expense extends Model {}
+export class Expense extends Model {
+    amount: any;
+    date: any;
+    categoryId: any;
+}
 Expense.init({
   amount: DataTypes.FLOAT,
   date: DataTypes.DATE,
