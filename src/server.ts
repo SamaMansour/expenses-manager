@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes'; // Routes for user authentication
 import categoryRoutes from './routes/categoryRoutes'; // Routes for category management
 import { ensureAuthenticated } from './middlewares/auth'; // Middleware to check authentication
 import passport from './config/passport'; // Adjust the path according to your project structure
+import expenseRoutes from './routes/expenseRoutes'; // Routes for category management
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(express.static('public'));
 // Routes
 app.use('/users', userRoutes);
 app.use('/categories',  categoryRoutes); // Protect all category routes
+app.use('/expenses',  expenseRoutes); // Protect all category routes
 
 // Home route
 app.get('/', (req, res) => res.render('index'));
