@@ -1,82 +1,43 @@
-import express from 'express';
-import dotenv from 'dotenv';
+import express, { Express } from 'express';
 import session from 'express-session';
+import dotenv from 'dotenv';
+import sequelize from './db'; // Adjust based on your project structure
+import userRoutes from './routes/userRoutes'; // Routes for user authentication
+import categoryRoutes from './routes/categoryRoutes'; // Routes for category management
+import { ensureAuthenticated } from './middlewares/auth'; // Middleware to check authentication
 import passport from './config/passport'; // Adjust the path according to your project structure
-import sequelize from './db';
-import userRoutes from './routes/userRoutes';
-import categoryRoutes from './routes/categoryRoutes';
 
-// Load environment variables from .env file
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app: Express = express();
+const PORT: number = parseInt(process.env.PORT as string, 10) || 3000;
 
-// Middleware to parse JSON bodies
+// EJS view engine setup
+app.set('view engine', 'ejs');
+
+// Middlewares
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Session configuration
 app.use(session({
-  secret: 'yourSecretKey', // Replace 'yourSecretKey' with a real secret key
+  secret: process.env.SESSION_SECRET || 'secret',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Set to true if you're using HTTPS, false for HTTP
 }));
-
-// Initialize Passport and its session management
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.set('view engine', 'ejs');
 
-// Set the directory where the views are stored
-const path = require('path');
-app.set('views', path.join(__dirname, 'views'));
+// Static files
+app.use(express.static('public'));
 
-
-// Define routes after session and passport initialization
+// Routes
 app.use('/users', userRoutes);
+app.use('/categories', ensureAuthenticated, categoryRoutes); // Protect all category routes
 
+// Home route
+app.get('/', (req, res) => res.render('index'));
 
-app.get('/register', (req, res) => {
-  res.render('register', { errors: [] }); // Initially, no errors
-});
-
-app.post('/register', (req, res) => {
-  // After form submission, attempt user registration
-  // If there are errors, re-render the registration page with error messages
-  const errors: string | any[] = []; // Assume this array is filled based on validation results
-  
-  if (errors.length) {
-    res.render('register', { errors });
-  } else {
-    // Proceed with registration logic and redirect or render as needed
-  }
-});
-
-app.get('/login', (req, res) => {
-  res.render('login', { errors: [] }); // Initially, no errors
-});
-
-app.post('/login', (req, res) => {
-  // After form submission, attempt user login
-  // If there are errors (e.g., wrong credentials), re-render the login page with error messages
-  const errors: string | any[] = []; // Assume this array gets filled based on authentication results
-  
-  if (errors.length) {
-    res.render('login', { errors });
-  } else {
-    // Proceed with login logic (e.g., setting session cookies) and redirect
-  }
-});
-
-
-app.use('/users', userRoutes);
-app.use('/categories', categoryRoutes);
-
-
-
-// Sync database and start the server
+// Sync Sequelize models and start Express server
 sequelize.sync().then(() => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
+}).catch(err => console.error('Sequelize sync error:', err));

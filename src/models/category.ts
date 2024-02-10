@@ -1,29 +1,19 @@
-// models/category.ts
-import { Model, InferAttributes, InferCreationAttributes, CreationOptional, ForeignKey, DataTypes } from 'sequelize';
-import sequelize  from '../db'; // Adjust this import based on your actual DB connection setup
-import { User } from './user'; // Adjust this import based on your actual User model
+// src/models/category.ts
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import sequelize from '../db';
+import { User } from './user';
 
-export class Category extends Model<InferAttributes<Category>, InferCreationAttributes<Category>> {
-  declare id: CreationOptional<number>;
-  declare name: string;
-  declare userId: ForeignKey<User['id']>;
+export class Category extends Model {
+    declare id: number;
+    declare name: string;
+    declare userId: number;
 }
 
 Category.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  name: {
-    type: new DataTypes.STRING(128),
-    allowNull: false,
-  },
-  userId: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-  },
-}, {
-  sequelize,
-  modelName: 'category',
-});
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    userId: { type: DataTypes.INTEGER, allowNull: false }
+}, { sequelize, modelName: 'category' });
+
+Category.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Category, { foreignKey: 'userId' });

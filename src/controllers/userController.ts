@@ -4,6 +4,8 @@ import { Op } from 'sequelize';
 
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 
 export const register = async (req: Request, res: Response) => {
@@ -29,19 +31,30 @@ export const register = async (req: Request, res: Response) => {
 };
 
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('local', (err:any, user:any, info:any) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.status(400).json({ success: false, message: info.message });
-    }
-    req.logIn(user, (loginErr) => {
-      if (loginErr) {
-        return next(loginErr);
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ where: { email } });
+      
+      if (!user) {
+          res.status(401).json({ message: 'Authentication failed. User not found.' });
+          return;
       }
-      return res.json({ success: true, message: "Logged in successfully", user: { id: user.id, email: user.email, username: user.username } });
-    });
-  })(req, res, next);
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      
+      if (!isMatch) {
+          res.status(401).json({ message: 'Invalid credentials' });
+          return;
+      }
+
+      // User authenticated, generate a token
+      const payload = { id: user.id, email: user.email }; // Customize payload as needed
+      const token = jwt.sign(payload, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '1h' }); // Adjust secret and expiration
+
+      res.json({ message: 'Login successful', token });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+  }
 };
