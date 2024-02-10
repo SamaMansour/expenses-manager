@@ -8,10 +8,49 @@ import { ensureAuthenticated } from './middlewares/auth'; // Middleware to check
 import passport from './config/passport'; // Adjust the path according to your project structure
 import expenseRoutes from './routes/expenseRoutes'; // Routes for category management
 
+
 dotenv.config();
 
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT as string, 10) || 3000;
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Expense Tracker API',
+    version: '1.0.0',
+    description: 'API for tracking expenses',
+  },
+  servers: [{
+    url: 'http://localhost:3000',
+    description: 'Local server',
+  }],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }
+    }
+  },
+  security: [{
+    BearerAuth: []
+  }],
+};
+
+
+
+// Options for the swagger docs
+const options = {
+  swaggerDefinition,
+  apis: ['./src/routes/*.ts'], // This glob pattern includes all TypeScript files in the routes directory
+};
+
+const swaggerSpec = swaggerJsdoc(options);
 
 // EJS view engine setup
 app.set('view engine', 'ejs');
@@ -36,6 +75,8 @@ app.use('/users', userRoutes);
 app.use('/categories',  categoryRoutes); // Protect all category routes
 app.use('/expenses',  expenseRoutes); // Protect all category routes
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+console.log(JSON.stringify(swaggerSpec, null, 2));
 // Home route
 app.get('/', (req, res) => res.render('index'));
 
