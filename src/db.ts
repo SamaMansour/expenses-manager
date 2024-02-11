@@ -8,6 +8,7 @@ const sequelize = new Sequelize(
   process.env.DATABASE_URL!, // Use the DATABASE_URL env variable or specify your connection string here
   {
     dialect: 'postgres', // This specifies that you are using PostgreSQL
+    host: process.env.DB_HOST,
     dialectOptions: {
       ssl: process.env.DATABASE_SSL === 'true' ? { // Optional: For Heroku or other cloud services requiring SSL
         require: true,
