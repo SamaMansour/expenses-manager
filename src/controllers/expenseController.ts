@@ -1,9 +1,9 @@
 // controllers/expenseController.ts
 import { Request, Response } from 'express';
-import { Expense } from '../models/expense';
+import Expense  from '../models/expense';
 import sequelize from '../db'; 
-import { Category } from '../models/category';
-
+import Category  from '../models/category';
+import { Op, fn, col, WhereOptions } from 'sequelize';
 
 export async function createExpense(req: Request, res: Response) {
   const { userId, categoryId, amount, date } = req.body;
@@ -59,28 +59,49 @@ export async function deleteExpense(req: Request, res: Response) {
 }
 
 
-  export async function listExpenses(req: Request, res: Response) {
-    const { userId, period, date } = req.query; // period: 'day' | 'month' | 'year'
-    let whereClause = {};
-    switch (period) {
-      case 'day':
-        whereClause = sequelize.where(sequelize.fn('date', sequelize.col('date')), '=', date);
-        break;
-      case 'month':
-        whereClause = sequelize.where(sequelize.fn('date_trunc', 'month', sequelize.col('date')), '=', sequelize.fn('date_trunc', 'month', date));
-        break;
-      case 'year':
-        whereClause = sequelize.where(sequelize.fn('date_trunc', 'year', sequelize.col('date')), '=', sequelize.fn('date_trunc', 'year', date));
-        break;
-    }
-    try {
-      const expenses = await Expense.findAll({
-        where: { userId, ...whereClause },
-        include: [{ model: Category }],
-      });
-      res.json(expenses);
-    } catch (error) {
-      res.status(500).json({ message: 'Error listing expenses' });
-    }
+export async function listExpenses(req: Request, res: Response): Promise<void> {
+  const { userId, period, date } = req.query;
+
+  // Base where clause to filter by userId
+  const whereClause: any = {
+      userId: userId,
+  };
+
+  // Adjust whereClause based on period
+  if (date) {
+      switch (period) {
+          case 'day':
+              whereClause.date = date; // Direct comparison if the periods match exactly with date formats
+              break;
+          case 'month':
+              // For month and year, use Op.gte and Op.lt to define a range
+              const startDate = new Date(date as string);
+              const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1); // Next month first day
+              whereClause.date = {
+                  [Op.gte]: startDate,
+                  [Op.lt]: endDate,
+              };
+              break;
+          case 'year':
+              const startOfYear = new Date(date as string);
+              const endOfYear = new Date(startOfYear.getFullYear() + 1, 0, 1); // First day of next year
+              whereClause.date = {
+                  [Op.gte]: startOfYear,
+                  [Op.lt]: endOfYear,
+              };
+              break;
+      }
   }
-  
+
+  try {
+      const expenses = await Expense.findAll({
+          include: [{ model: Category, as: 'category' }],
+          where: whereClause,
+      });
+
+      res.json(expenses);
+  } catch (error) {
+      console.error('Error listing expenses:', error);
+      res.status(500).json({ message: 'Error listing expenses' });
+  }
+}
