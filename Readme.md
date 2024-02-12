@@ -62,6 +62,8 @@ JWT_SECRET=<your-jwt-secret>
 7. Start docker
 `docker compose up`
 
+8. Run docker detached
+`docker compose up -d`
 
 ## API Documentation
 
