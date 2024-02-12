@@ -16,8 +16,15 @@ export async function createCategory(req: Request, res: Response): Promise<void>
 }
 
 export async function listCategories(req: Request, res: Response): Promise<void> {
+    // Assuming the user's ID is stored in req.user.id after successful authentication
+    const userId = (req.user as any).id;
+
+
     try {
-        const categories = await Category.findAll();
+        // Fetch categories that belong to the logged-in user
+        const categories = await Category.findAll({
+            where: { userId: userId }
+        });
         res.json(categories); // Respond with the list of categories as JSON
     } catch (error) {
         console.error(error);
