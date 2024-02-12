@@ -73,3 +73,28 @@ JWT_SECRET=<your-jwt-secret>
 ## API Documentation
 
 Access the Swagger UI for the API documentation at `http://localhost:3000/api-docs` after starting the server, where you can find detailed information about the API endpoints, request bodies, and responses.
+
+
+`CREATE DATABASE expense_manager;
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    user_id INTEGER REFERENCES users(id)
+);
+
+CREATE TABLE expenses (
+    id SERIAL PRIMARY KEY,
+    amount DECIMAL NOT NULL,
+    date TIMESTAMP NOT NULL,
+    category_id INTEGER REFERENCES categories(id),
+    user_id INTEGER REFERENCES users(id)
+);
+`
