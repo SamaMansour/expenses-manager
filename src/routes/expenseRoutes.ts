@@ -173,12 +173,7 @@ router.delete('/expenses/:id', ensureAuthenticated, deleteExpense);
  *     security:
  *       - BearerAuth: []
  *     parameters:
- *       - in: query
- *         name: userId
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the user whose expenses to retrieve.
+ *      
  *       - in: query
  *         name: period
  *         required: false

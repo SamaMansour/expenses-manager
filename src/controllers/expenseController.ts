@@ -31,7 +31,9 @@ export async function deleteExpense(req: Request, res: Response) {
 
   export async function editExpense(req: Request, res: Response): Promise<void> {
     const { id } = req.params; 
-    const { userId, amount, date, categoryId } = req.body; // Updated expense data from the request body
+    const { amount, date, categoryId } = req.body; // Updated expense data from the request body
+    const userId = (req.user as any).id;
+
 
     try {
         
@@ -61,7 +63,9 @@ export async function deleteExpense(req: Request, res: Response) {
 
 
 export async function listExpenses(req: Request, res: Response): Promise<void> {
-  const { userId, period, date } = req.query;
+  const { period, date } = req.query;
+  const userId = (req.user as any).id;
+
 
   // Base where clause to filter by userId
   const whereClause: any = {
