@@ -50,19 +50,24 @@ DB_DATABASE=<your-db-name>
 DB_HOST=<your-db-host>
 JWT_SECRET=<your-jwt-secret>
 
+5. Create database expense_manager
 
+`Create database expense_manager`
 
-5. Run database migrations:
+6. Restore db from dump, change file extension to .sql
+
+`psql -U root -d expense_manager -f [backup_file_path]`
+
+7. Run database migrations:
 `npx sequelize-cli db:migrate`
 
-
-6. Start the server:
+8. Start the server:
 `npm run dev`
 
-7. Start docker
+8. Start docker
 `docker compose up`
 
-8. Run docker detached
+9. Run docker detached
 `docker compose up -d`
 
 ## API Documentation
