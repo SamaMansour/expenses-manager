@@ -59,6 +59,9 @@ JWT_SECRET=<your-jwt-secret>
 6. Start the server:
 `npm run dev`
 
+7. Start docker
+`docker compose up`
+
 
 ## API Documentation
 

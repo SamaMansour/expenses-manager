@@ -6,7 +6,8 @@ import Category  from '../models/category';
 import { Op, fn, col, WhereOptions } from 'sequelize';
 
 export async function createExpense(req: Request, res: Response) {
-  const { userId, categoryId, amount, date } = req.body;
+  const userId = (req.user as any).id;
+  const { categoryId, amount, date } = req.body;
   try {
     const expense = await Expense.create({ userId, categoryId, amount, date });
     res.status(201).json(expense);

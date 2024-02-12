@@ -1,10 +1,40 @@
-// src/routes/categoryRoutes.ts
 import express from 'express';
 import { createCategory, listCategories, editCategory, getCategory } from '../controllers/categoryController';
 import { ensureAuthenticated } from '../middlewares/auth';
 
-
 const router = express.Router();
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The auto-generated ID of the category.
+ *         name:
+ *           type: string
+ *           description: The name of the category.
+ *         userId:
+ *           type: integer
+ *           description: The user ID associated with the category.
+ *       example:
+ *         id: 1
+ *         name: Grocery
+ *         userId: 8
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ * tags:
+ *   - name: Category
+ *     description: Operations related to categories.
+ */
 
 /**
  * @swagger
@@ -25,26 +55,26 @@ const router = express.Router();
  *             properties:
  *               name:
  *                 type: string
+ *                 description: The name of the category.
  *                 example: Grocery
- *               userId:
- *                 type: number
- *                 example: 8
  *     responses:
  *       201:
- *         description: Category created successfully
+ *         description: Category created successfully.
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized due to missing or invalid JWT token.
  */
 
+
 router.post('/create', ensureAuthenticated, createCategory);
+
 /**
  * @swagger
  * /categories:
  *   get:
- *     summary: Retrieve a list of all categories
+ *     summary: Retrieve a list of all categories for the authenticated user.
  *     tags: [Category]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: A list of categories.
@@ -54,32 +84,36 @@ router.post('/create', ensureAuthenticated, createCategory);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Category'
+ *              
  *       401:
  *         description: Unauthorized access.
  */
 
 router.get('/', ensureAuthenticated, listCategories);
+
 /**
  * @swagger
- * /categories/{id}:
+ * /categories/categories/{id}:
  *   put:
- *     summary: Update an existing category
+ *     summary: Update an existing category by its ID.
  *     tags: [Category]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the category to update
+ *         description: The ID of the category to be updated.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
  *             properties:
  *               name:
  *                 type: string
@@ -88,37 +122,35 @@ router.get('/', ensureAuthenticated, listCategories);
  *     responses:
  *       200:
  *         description: Category updated successfully.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Category'
  *       400:
- *         description: Invalid input provided.
+ *         description: Invalid request data.
  *       404:
  *         description: Category not found.
  *       401:
  *         description: Unauthorized access.
  */
 
+
 router.put('/categories/:id', ensureAuthenticated, editCategory);
+
 /**
  * @swagger
- * /categories/{id}:
+ * /categories/categories/{id}:
  *   get:
- *     summary: Retrieve a single category by its ID
+ *     summary: Retrieve a single category by its ID.
  *     tags: [Category]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the category to retrieve
+ *         description: The ID of the category to retrieve.
  *     responses:
  *       200:
- *         description: A single category.
+ *         description: A single category detail.
  *         content:
  *           application/json:
  *             schema:
@@ -130,6 +162,5 @@ router.put('/categories/:id', ensureAuthenticated, editCategory);
  */
 
 router.get('/categories/:id', ensureAuthenticated, getCategory);
-
 
 export default router;

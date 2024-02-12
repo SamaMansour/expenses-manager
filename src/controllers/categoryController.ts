@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import Category  from '../models/category';
+import Category from '../models/category';
 
 export async function createCategory(req: Request, res: Response): Promise<void> {
     const { name } = req.body;
+    const userId = (req.user as any).id;
 
     
     try {
-        const newCategory = await Category.create({ name});
+        const newCategory = await Category.create({ name, userId });
         res.status(201).json(newCategory); // Respond with the newly created category object
     } catch (error) {
         console.error(error);
