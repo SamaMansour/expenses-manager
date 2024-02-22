@@ -1,6 +1,6 @@
 # Expenses Manager
 
-Project Name is a comprehensive expense tracking API that allows users to register, log in, manage expense categories, and record their expenses efficiently.
+Expenses Manager is a comprehensive expense tracking API that allows users to register, log in, manage expense categories, and record their expenses efficiently.
 
 ## Features
 
